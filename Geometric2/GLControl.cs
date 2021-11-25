@@ -21,7 +21,7 @@ namespace Geometric2
         {
             var topPoint = new Vector3(0, (float)Math.Sqrt(3), 0);
             diagonalLine.IsDiagonalLine = true;
-            diagonalLine.linePoints = new List<Vector3>() { new Vector3(0, 0, 0), topPoint };
+            diagonalLine.linePointsList = new List<Vector3>() { new Vector3(0, 0, 0), topPoint };
 
             List<Vector3> cubeLinePoints = new List<Vector3>()
             {
@@ -44,14 +44,14 @@ namespace Geometric2
             var modelMtxPoints = ModelMatrix.CreateModelMatrix(1.0f, (float)Math.PI / 4, 0.0f, (float)Math.Atan(Math.Sqrt(2) / 2), new Vector3(0, (float)Math.Sqrt(3) / 2, 0));
             foreach (var p in cubeLinePoints)
             {
-                cubeLines.linePoints.Add(new Vector3(new Vector4(p, 1.0f) * modelMtxPoints));
+                cubeLines.linePointsList.Add(new Vector3(new Vector4(p, 1.0f) * modelMtxPoints));
             }
 
             pathLines.IsMoveLine = true;
-            var topPointInModelSpace = new Vector4(topPoint, 1.0f) * modelMtxPoints;
+            var topPointInModelSpace = new Vector4(topPoint, 1.0f) * CreateModelMatrixForPoint.CreateMatrix(globalPhysicsData);
             for (int i = 0; i < 1000000; i++)
             {
-                pathLines.linePoints.Add(new Vector3(topPointInModelSpace));
+                pathLines.linePointsList.Add(new Vector3(topPointInModelSpace));
             }
         }
 

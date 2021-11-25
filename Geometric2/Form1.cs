@@ -237,21 +237,15 @@ namespace Geometric2
         {
             PointListThread = new Thread(() =>
             {
-                var diagonalRoundQ = (new Quaternion(new Vector3(0, (float)globalPhysicsData.diagonalRoundInRadian, 0))).Normalized();
-                var xRoundQ = (new Quaternion(new Vector3((float)globalPhysicsData.alfaAngleInRadian, 0, 0))).Normalized();
-                var yRoundQ = (new Quaternion(new Vector3(0, (float)globalPhysicsData.yRoundInRadian, 0))).Normalized();
-                var RotationQuaternion = yRoundQ * xRoundQ * diagonalRoundQ;
+                //pathLines.linePointsList.
 
-                _shader.Use();
-                var cubeSize = (float)globalPhysicsData.InitialConditionsData.cubeEdgeLength;
-                Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(cubeSize, cubeSize, cubeSize), RotationQuaternion, new Vector3(0,0,0), new Vector3(0,0,0), Quaternion.FromEulerAngles(0.0f, 0.0f, 0.0f));
-
-
-                //var topPointInModelSpace = new Vector4(topPoint, 1.0f) * modelMtxPoints;
-                //for (int i = 0; i < 1000000; i++)
-                //{
-                //    pathLines.linePoints.Add(new Vector3(topPointInModelSpace));
-                //}
+                while (true)
+                {
+                    var topPoint = new Vector3(0, (float)Math.Sqrt(3), 0);
+                    var topPointInModelSpace = new Vector4(topPoint, 1.0f) * CreateModelMatrixForPoint.CreateMatrix(globalPhysicsData);
+                    pathLines.linePointsList.Add(new Vector3(topPointInModelSpace));
+                    Thread.Sleep(10);
+                }
             });
 
             PointListThread.Start();

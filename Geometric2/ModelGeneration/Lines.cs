@@ -14,7 +14,7 @@ namespace Geometric2.ModelGeneration
     {
         public bool IsDiagonalLine { get; set; }
         public bool IsMoveLine { get; set; }
-        public List<Vector3> linePoints = new List<Vector3>();
+        public List<Vector3> linePointsList = new List<Vector3>();
         float[] linesPoints = new float[] { };
         uint[] linesIndices = new uint[] { };
         int linesVBO, linesVAO, linesEBO;
@@ -63,8 +63,9 @@ namespace Geometric2.ModelGeneration
             {
                 if (globalPhysicsData.displayPath)
                 {
+                    FillLineGeometry();
                     _shader.SetMatrix4("model", Matrix4.Identity);
-                    GenerateLines();
+                    GenerateLinesForPath(globalPhysicsData);
                     _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Black));
                     GL.DrawElements(PrimitiveType.LineStrip, linesIndices.Length, DrawElementsType.UnsignedInt, 0 * sizeof(int));
                 }
@@ -82,18 +83,53 @@ namespace Geometric2.ModelGeneration
             GL.BindVertexArray(0);
         }
 
+        private void FillLineGeometry()
+        {
+            GL.BindVertexArray(linesVAO);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, linesVBO);
+            GL.BufferData(BufferTarget.ArrayBuffer, linesPoints.Length * sizeof(float), linesPoints, BufferUsageHint.DynamicDraw);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, linesEBO);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, linesIndices.Length * sizeof(uint), linesIndices, BufferUsageHint.DynamicDraw);
+        }
+
         private void GenerateLines()
         {
-            var tempLinesPoints = new float[3 * linePoints.Count];
-            var tempLinesIndices = new uint[linePoints.Count];
+            var tempLinesPoints = new float[3 * linePointsList.Count];
+            var tempLinesIndices = new uint[linePointsList.Count];
             int idx = 0;
-            var tempLinePointsReference = linePoints;
+            var tempLinePointsReference = linePointsList;
             foreach (var p in tempLinePointsReference)
             {
                 tempLinesPoints[3 * idx] = p.X;
                 tempLinesPoints[3 * idx + 1] = p.Y;
                 tempLinesPoints[3 * idx + 2] = p.Z;
                 tempLinesIndices[idx] = (uint)idx;
+                idx++;
+            }
+
+            linesPoints = tempLinesPoints;
+            linesIndices = tempLinesIndices;
+        }
+
+        private void GenerateLinesForPath(GlobalPhysicsData globalPhysicsData)
+        {
+            var tempLinesPoints = new float[linesPoints.Length];
+            var tempLinesIndices = new uint[globalPhysicsData.numberOfPointsToShow];
+
+            int pointsInList = linePointsList.Count;
+            int allAvailablePoints = linesPoints.Length / 3;
+            for (int i=0;i< allAvailablePoints; i++)
+            {
+                int offset = pointsInList - allAvailablePoints;
+                tempLinesPoints[3 * i] = linePointsList[offset + i].X;
+                tempLinesPoints[3 * i + 1] = linePointsList[offset + i].Y;
+                tempLinesPoints[3 * i + 2] = linePointsList[offset + i].Z;
+            }
+
+            int idx = 0;
+            for(int i= allAvailablePoints - globalPhysicsData.numberOfPointsToShow; i< allAvailablePoints; i++)
+            {
+                tempLinesIndices[idx] = (uint)i;
                 idx++;
             }
 
