@@ -116,21 +116,24 @@ namespace Geometric2.ModelGeneration
             var tempLinesPoints = new float[linesPoints.Length];
             var tempLinesIndices = new uint[globalPhysicsData.numberOfPointsToShow];
 
-            int pointsInList = linePointsList.Count;
-            int allAvailablePoints = linesPoints.Length / 3;
-            for (int i=0;i< allAvailablePoints; i++)
+            lock (globalPhysicsData.lockPathPointsList)
             {
-                int offset = pointsInList - allAvailablePoints;
-                tempLinesPoints[3 * i] = linePointsList[offset + i].X;
-                tempLinesPoints[3 * i + 1] = linePointsList[offset + i].Y;
-                tempLinesPoints[3 * i + 2] = linePointsList[offset + i].Z;
-            }
+                int pointsInList = linePointsList.Count;
+                int allAvailablePoints = linesPoints.Length / 3;
+                for (int i = 0; i < allAvailablePoints; i++)
+                {
+                    int offset = pointsInList - allAvailablePoints;
+                    tempLinesPoints[3 * i] = linePointsList[offset + i].X;
+                    tempLinesPoints[3 * i + 1] = linePointsList[offset + i].Y;
+                    tempLinesPoints[3 * i + 2] = linePointsList[offset + i].Z;
+                }
 
-            int idx = 0;
-            for(int i= allAvailablePoints - globalPhysicsData.numberOfPointsToShow; i< allAvailablePoints; i++)
-            {
-                tempLinesIndices[idx] = (uint)i;
-                idx++;
+                int idx = 0;
+                for (int i = allAvailablePoints - globalPhysicsData.numberOfPointsToShow; i < allAvailablePoints; i++)
+                {
+                    tempLinesIndices[idx] = (uint)i;
+                    idx++;
+                }
             }
 
             linesPoints = tempLinesPoints;

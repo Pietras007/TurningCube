@@ -8,6 +8,9 @@ namespace Geometric2.Global
 {
     public class GlobalPhysicsData
     {
+        //Help
+        public object lockPathPointsList = new object { };
+
         //Visualization Settings
         public bool displayCube = true;
         public bool displayDiagonal = true;
