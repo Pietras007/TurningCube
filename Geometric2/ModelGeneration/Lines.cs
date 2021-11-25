@@ -46,7 +46,8 @@ namespace Geometric2.ModelGeneration
             RotationQuaternion = yRoundQ * xRoundQ * diagonalRoundQ;
 
             _shader.Use();
-            Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(1, 1, 1), RotationQuaternion, CenterPosition + Translation, rotationCentre, TempRotationQuaternion);
+            var cubeSize = (float)globalPhysicsData.InitialConditionsData.cubeEdgeLength;
+            Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(cubeSize, cubeSize, cubeSize), RotationQuaternion, CenterPosition + Translation, rotationCentre, TempRotationQuaternion);
             _shader.SetMatrix4("model", model);
             GL.BindVertexArray(linesVAO);
             if (IsDiagonalLine)
