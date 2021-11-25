@@ -1,36 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Geometric2.RasterizationClasses;
-using OpenTK.Graphics.OpenGL4;
-using Geometric2.MatrixHelpers;
 using Geometric2.ModelGeneration;
-using System.Numerics;
 using OpenTK;
 using Geometric2.Helpers;
 using System.Diagnostics;
 using System.Threading;
-using System.Drawing;
 using Geometric2.Global;
-using System.Xml;
-using System.Linq;
-using Geometric2.Models;
 
 namespace Geometric2
 {
     public partial class Form1 : Form
     {
+        bool isProgramWorking = true;
+
         public Form1()
         {
             InitializeComponent();
             Thread thread = new Thread(() =>
             {
-                while (true)
+                while (isProgramWorking)
                 {
                     glControl1.Invalidate();
                     Thread.Sleep(16);
@@ -44,6 +34,8 @@ namespace Geometric2
         private void Form1_Load(object sender, EventArgs e)
         {
             cameraLightCheckBox.Checked = true;
+
+            InitializePhysicsData();
         }
 
         private Thread SimulationThread = null;
@@ -164,6 +156,7 @@ namespace Geometric2
             temporaryConditionsData.angularVelocityRadian = (Math.PI / 180) * (double)angularVelocityNumericUpDown.Value;
             temporaryConditionsData.integrationStep = (double)integrationStepNumericUpDown.Value;
 
+            InitializePhysicsData();
         }
 
         private void cubeEdgeLengthNumericUpDown_ValueChanged(object sender, EventArgs e)
@@ -191,45 +184,105 @@ namespace Geometric2
             temporaryConditionsData.integrationStep = (double)integrationStepNumericUpDown.Value;
         }
 
-        private Vector3d GetInertiaTensor()
+        private void InitializePhysicsData()
         {
-            var inertiaTensorBaseX = 11d / 12d;
-            var inertiaTensorBaseY = 1d / 6d;
-            var inertiaTensorBaseZ = 11d / 12d;
-
-            var edge = globalPhysicsData.InitialConditionsData.cubeEdgeLength;
-            var density = globalPhysicsData.InitialConditionsData.cubeDensity;
-
-            return Math.Pow(edge, 5d) * density * new Vector3d(inertiaTensorBaseX, inertiaTensorBaseY, inertiaTensorBaseZ);
+            globalPhysicsData.CalculateInitialRotationQuaternion();
+            globalPhysicsData.InitialConditionsData.CalculateValues();
+            physicsStepData = GetInitialPhysicsStepData(globalPhysicsData);
         }
+
+        private static PhysicsStepData GetInitialPhysicsStepData(GlobalPhysicsData data)
+        {
+            PhysicsStepData physicsStepData = new PhysicsStepData();
+            physicsStepData.quaternion = Quaterniond.FromEulerAngles(data.InitialConditionsData.cubeDeviationRadian, 0, 0);
+            physicsStepData.angularVelocity = data.InitialConditionsData.angularVelocityRadian * Vector3d.UnitY;
+
+            return physicsStepData;
+        }
+
+        private struct PhysicsStepData
+        {
+            public Quaterniond quaternion;
+            public Vector3d angularVelocity;
+        }
+
+        private PhysicsStepData physicsStepData;
 
         private void GlobalCalculationFunction()
         {
             SimulationThread = new Thread(() =>
             {
-                while (true)
+                while (isProgramWorking)
                 {
-                    long nanosecondsToWait = (long)(globalPhysicsData.InitialConditionsData.integrationStep * 1000_1000_1000);
+                    long nanosecondsToWait = (long)(globalPhysicsData.InitialConditionsData.integrationStep * 1000_000_000);
                     long nanoPrev = 10000L * Stopwatch.GetTimestamp();
                     nanoPrev /= TimeSpan.TicksPerMillisecond;
                     nanoPrev *= 100L;
 
+                    var deltaTime = globalPhysicsData.InitialConditionsData.integrationStep;
+                    var I = globalPhysicsData.InitialConditionsData.inertiaTensor;
+                    var W = physicsStepData.angularVelocity;
+                    var Q = physicsStepData.quaternion;
+                    var W_quat = new Quaterniond(W, 0);
 
                     //Tutaj kod symulacji co wykonuje się co delta (globalPhysicsData.InitialConditionsData.integrationStep)
                     //Obliczenia
                     //TYLKO STAD BRAĆ DANE DO OBLICZEN  globalPhysicsData. itd dalej
 
+                    //TODO: calculate N
+                    var N = Vector3d.Zero;
+                    if (globalPhysicsData.gravityOn)
+                    {
+                        var matrix = Matrix3d.CreateFromQuaternion(Q);
+                        var gravityRotated = (Q.Inverted() * globalPhysicsData.gravitationQuaternion * Q).Xyz;
+                        gravityRotated *= globalPhysicsData.InitialConditionsData.mass;
+                        N = Vector3d.Cross(globalPhysicsData.InitialConditionsData.massCentre, gravityRotated);
+                       // var gravityForceVal = N.Length;
+                    }
+
+                    double W_X = ((N.X + (I.Y - I.Z) * W.Y * W.Z) / I.X) * deltaTime + W.X;
+                    double W_Y = ((N.Y + (I.Z - I.X) * W.X * W.Z) / I.Y) * deltaTime + W.Y;
+                    double W_Z = ((N.Z + (I.X - I.Y) * W.X * W.Y) / I.Z) * deltaTime + W.Z;
+
+                    if (W_X > 1e-1)
+                    {
+                        //Debug.WriteLine($"W_X is getting large {W_X}");
+                    }
+
+                    if (W_Z > 1e-1)
+                    {
+                        //Debug.WriteLine($"W_Z is getting large {W_Z}");
+                    }
+
+                    Quaterniond Q_new = 0.5 * Q * new Quaterniond(W_Z, W_Y, W_Z, 0) * deltaTime + Q;
+                    Q_new.Normalize();
+
+                    physicsStepData.angularVelocity = new Vector3d(W_X, W_Y, W_Z);
+                    physicsStepData.quaternion = Q_new;
 
 
                     //UStawienie odpowiednich wartości dla sześcianu
                     globalPhysicsData.alfaAngleInRadian += 0.000001;
-                    globalPhysicsData.diagonalRoundInRadian += 0.001;
+                    globalPhysicsData.diagonalRoundInRadianX += W_X * deltaTime;
+                    globalPhysicsData.diagonalRoundInRadianY += W_Y * deltaTime;
+                    globalPhysicsData.diagonalRoundInRadianZ += W_Z * deltaTime;
                     globalPhysicsData.yRoundInRadian += 0.00001;
 
 
+
+
+                    //var Qf = Q_new.ConvertToQuaternionAndNormalize();
+                    //var invQf = Qf.Inverted();
+
+
+                    //var invQ_new = Q_new.Inverted(); 
+                    //var X = invQ_new * new Quaternion
+                    //var diagonalRoundQ = (new Quaternion(new Vector3(0, (float)globalPhysicsData.diagonalRoundInRadian, 0))).Normalized();
+                    //globalPhysicsData.rotationQuaternion = Q_new.ConvertToQuaternionAndNormalize();
+
                     //Odczekanie pozostałego czasu
                     long nanoPost;
-                    while (true)
+                    while (isProgramWorking)
                     {
                         nanoPost = 10000L * Stopwatch.GetTimestamp();
                         nanoPost /= TimeSpan.TicksPerMillisecond;
@@ -245,12 +298,17 @@ namespace Geometric2
             SimulationThread.Start();
         }
 
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            isProgramWorking = false;
+        }
+
         private void DrawPath()
         {
             PointListThread = new Thread(() =>
             {
                 var topPoint = new Vector3(0, (float)Math.Sqrt(3), 0);
-                var topPointInModelSpace = new Vector4(topPoint, 1.0f) * CreateModelMatrixForPoint.CreateMatrix(globalPhysicsData);
+                var topPointInModelSpace = new Vector4(topPoint, 1.0f) * CreateModelMatrix.CreateMatrixForPoint(globalPhysicsData);
                 List<Vector3> newPointList = new List<Vector3>();
                 for (int i = 0; i < 1000_000; i++)
                 {
@@ -262,9 +320,9 @@ namespace Geometric2
                     pathLines.linePointsList = newPointList;
                 }
 
-                while (true)
+                while (isProgramWorking)
                 {
-                    topPointInModelSpace = new Vector4(topPoint, 1.0f) * CreateModelMatrixForPoint.CreateMatrix(globalPhysicsData);
+                    topPointInModelSpace = new Vector4(topPoint, 1.0f) * CreateModelMatrix.CreateMatrixForPoint(globalPhysicsData);
                     pathLines.linePointsList.Add(new Vector3(topPointInModelSpace));
                     Thread.Sleep(10);
                 }

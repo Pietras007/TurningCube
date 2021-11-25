@@ -48,7 +48,7 @@ namespace Geometric2
             }
 
             pathLines.IsMoveLine = true;
-            var topPointInModelSpace = new Vector4(topPoint, 1.0f) * CreateModelMatrixForPoint.CreateMatrix(globalPhysicsData);
+            var topPointInModelSpace = new Vector4(topPoint, 1.0f) * CreateModelMatrix.CreateMatrixForPoint(globalPhysicsData);
             for (int i = 0; i < 1000000; i++)
             {
                 pathLines.linePointsList.Add(new Vector3(topPointInModelSpace));
@@ -172,7 +172,7 @@ namespace Geometric2
 
         private void glControl1_MouseWheel(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            int numberOfTextLinesToMove = e.Delta * SystemInformation.MouseWheelScrollLines / 120;
+            int numberOfTextLinesToMove = e.Delta * SystemInformation.MouseWheelScrollLines / 200;
             if (_camera.CameraDist - numberOfTextLinesToMove > 1.0f)
             {
                 _camera.CameraDist -= numberOfTextLinesToMove;

@@ -221,6 +221,11 @@ namespace Geometric2
             // integrationStepNumericUpDown
             // 
             this.integrationStepNumericUpDown.DecimalPlaces = 5;
+            this.integrationStepNumericUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
             this.integrationStepNumericUpDown.Location = new System.Drawing.Point(123, 294);
             this.integrationStepNumericUpDown.Maximum = new decimal(new int[] {
             1,
@@ -247,7 +252,7 @@ namespace Geometric2
             this.angularVelocityNumericUpDown.DecimalPlaces = 2;
             this.angularVelocityNumericUpDown.Location = new System.Drawing.Point(123, 256);
             this.angularVelocityNumericUpDown.Maximum = new decimal(new int[] {
-            10000,
+            1000000,
             0,
             0,
             0});
@@ -496,6 +501,7 @@ namespace Geometric2
             this.Controls.Add(this.menuStrip2);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.menuStrip2.ResumeLayout(false);
             this.menuStrip2.PerformLayout();
