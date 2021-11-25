@@ -17,9 +17,42 @@ namespace Geometric2
 {
     public partial class Form1 : Form
     {
+        private void Generate()
+        {
+            diagonalLine.IsDiagonalLine = true;
+            diagonalLine.linePoints = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, (float)Math.Sqrt(3), 0) };
+
+            List<Vector3> cubeLinePoints = new List<Vector3>()
+            {
+                new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, 0.5f),
+                new Vector3(0.5f, -0.5f, 0.5f),new Vector3(0.5f, 0.5f, 0.5f),
+                new Vector3(0.5f, 0.5f, 0.5f),new Vector3(-0.5f, 0.5f, 0.5f),
+                new Vector3(-0.5f, 0.5f, 0.5f),new Vector3(-0.5f, -0.5f, 0.5f),
+
+                new Vector3(-0.5f, -0.5f, -0.5f), new Vector3(0.5f, -0.5f, -0.5f),
+                new Vector3(0.5f, -0.5f, -0.5f),new Vector3(0.5f, 0.5f, -0.5f),
+                new Vector3(0.5f, 0.5f, -0.5f),new Vector3(-0.5f, 0.5f, -0.5f),
+                new Vector3(-0.5f, 0.5f, -0.5f),new Vector3(-0.5f, -0.5f, -0.5f),
+
+                new Vector3(-0.5f, 0.5f, 0.5f),new Vector3(-0.5f, 0.5f, -0.5f),
+                new Vector3(0.5f, 0.5f, 0.5f),new Vector3(0.5f, 0.5f, -0.5f),
+                new Vector3(-0.5f, -0.5f, 0.5f),new Vector3(-0.5f, -0.5f, -0.5f),
+                new Vector3(0.5f, -0.5f, 0.5f),new Vector3(0.5f, -0.5f, -0.5f),
+            };
+
+            var modelMtxPoints = ModelMatrix.CreateModelMatrix(1.0f, (float)Math.PI / 4, 0.0f, (float)Math.Atan(Math.Sqrt(2) / 2), new Vector3(0, (float)Math.Sqrt(3) / 2, 0));
+            foreach (var p in cubeLinePoints)
+            {
+                cubeLines.linePoints.Add(new Vector3(new Vector4(p, 1.0f) * modelMtxPoints));
+            }
+        }
+
         private void glControl1_Load(object sender, EventArgs e)
         {
+            Generate();
             Elements.Add(xyzLines);
+            Elements.Add(diagonalLine);
+            Elements.Add(cubeLines);
             Elements.Add(cube);
             GL.ClearColor(Color.LightCyan);
             GL.Enable(EnableCap.DepthTest);
@@ -63,6 +96,7 @@ namespace Geometric2
 
             _shaderLight.SetInt("material.diffuse", 0);
             _shaderLight.SetInt("material.specular", 1);
+            _shaderLight.SetInt("material.noise", 2);
             _shaderLight.SetFloat("material.shininess", 16.0f);
             if (cameraLight)
             {
@@ -79,7 +113,10 @@ namespace Geometric2
 
             foreach (var el in Elements)
             {
-                el.RenderGlElement(_shader, _shaderLight, new Vector3(0,0,0));
+
+                GL.Enable(EnableCap.Blend);
+                GL.BlendFunc( BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                el.RenderGlElement(_shader, _shaderLight, new Vector3(0,0,0), globalPhysicsData);
             }
 
         }

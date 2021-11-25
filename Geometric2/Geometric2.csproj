@@ -81,6 +81,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Global\Enums.cs" />
+    <Compile Include="Global\GlobalPhysicsData.cs" />
     <Compile Include="Helpers\ColorHelper.cs" />
     <Compile Include="MatrixHelpers\ModelMatrix.cs" />
     <Compile Include="MatrixHelpers\ProjectionMatrix.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="MatrixHelpers\ViewMatrix.cs" />
     <Compile Include="ModelGeneration\Cube.cs" />
     <Compile Include="ModelGeneration\Element.cs" />
+    <Compile Include="ModelGeneration\Lines.cs" />
     <Compile Include="ModelGeneration\XyzLines.cs" />
     <Compile Include="Models\CubeData.cs" />
     <Compile Include="RasterizationClasses\Camera.cs" />
@@ -136,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\50specular.png" />
+    <Content Include="Resources\noise.jpg" />
     <Content Include="Resources\wood.jpg" />
   </ItemGroup>
   <ItemGroup />

@@ -54,7 +54,11 @@ namespace Geometric2
         private XyzLines xyzLines = new XyzLines();
         private Cube cube = new Cube();
         private List<Element> Elements = new List<Element>();
+        private Lines diagonalLine = new Lines();
+        private Lines cubeLines = new Lines();
+
         int prev_xPosMouse = -1, prev_yPosMouse = -1;
+        GlobalPhysicsData globalPhysicsData = new GlobalPhysicsData();
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -71,6 +75,11 @@ namespace Geometric2
         private void cameraLightCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             cameraLight = cameraLightCheckBox.Checked;
+        }
+
+        private void GlobalCalculationFunction()
+        {
+
         }
     }
 }

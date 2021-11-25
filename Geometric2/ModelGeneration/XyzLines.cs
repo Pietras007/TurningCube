@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using Geometric2.Global;
 using Geometric2.Helpers;
 using Geometric2.RasterizationClasses;
 using OpenTK;
@@ -43,7 +44,7 @@ namespace Geometric2.ModelGeneration
             GL.EnableVertexAttribArray(a_Position_Location);
         }
 
-        public override void RenderGlElement(Shader _shader, Shader _shaderLight, Vector3 rotationCentre)
+        public override void RenderGlElement(Shader _shader, Shader _shaderLight, Vector3 rotationCentre, GlobalPhysicsData globalPhysicsData)
         {
             _shader.Use();
             _shader.SetMatrix4("model", Matrix4.Identity);

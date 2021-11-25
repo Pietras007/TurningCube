@@ -15,7 +15,7 @@ vec3 normalGenerator(vec3 a, vec3 b, vec3 c);
 void main()
 {
     FragPos = vec3(vec4(a_Position, 1.0) * model);
-    Normal = aNormal;
+    Normal = vec3(vec4(aNormal,1.0f)* model);
     TexCoords = aTexCoords;
 
     gl_Position = vec4(a_Position, 1.0) * model * view * projection;

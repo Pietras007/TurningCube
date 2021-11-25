@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using Geometric2.Global;
 using Geometric2.Helpers;
 using Geometric2.MatrixHelpers;
 using Geometric2.Models;
@@ -60,12 +61,15 @@ namespace Geometric2.ModelGeneration
         uint[] indices;
         Texture texture;
         Texture specular;
+        Texture noise;
+        float diagonalRoundInRadian = 0;
+        float yRoundInRadian = 0;
         public CubeData CubeData { get; set; }
 
         public Cube()
         {
             indices = new uint[36];
-            for(int i=0;i<indices.Length;i++)
+            for (int i = 0; i < indices.Length; i++)
             {
                 indices[i] = (uint)i;
             }
@@ -73,9 +77,11 @@ namespace Geometric2.ModelGeneration
 
         public override void CreateGlElement(Shader _shader, Shader _shaderLight)
         {
+            cubePoints = ChangePointAndNormalsPositions(cubePoints);
             _shaderLight.Use();
             texture = new Texture("./../../../Resources/wood.jpg");
             specular = new Texture("./../../../Resources/50specular.png");
+            noise = new Texture("./../../../Resources/noise.jpg");
             cubeVAO = GL.GenVertexArray();
             cubeVBO = GL.GenBuffer();
             cubeEBO = GL.GenBuffer();
@@ -95,16 +101,52 @@ namespace Geometric2.ModelGeneration
             GL.VertexAttribPointer(aTexCoords, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
         }
 
-        public override void RenderGlElement(Shader _shader, Shader _shaderLight, Vector3 rotationCentre)
+        public override void RenderGlElement(Shader _shader, Shader _shaderLight, Vector3 rotationCentre, GlobalPhysicsData globalPhysicsData)
         {
             _shaderLight.Use();
-            Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(1, 1, 1), RotationQuaternion, CenterPosition + Translation + TemporaryTranslation, rotationCentre, TempRotationQuaternion);
+
+            var diagonalRoundQ = (new Quaternion(new Vector3(0, globalPhysicsData.diagonalRoundInRadian, 0))).Normalized();
+            var xRoundQ = (new Quaternion(new Vector3(globalPhysicsData.alfaAngleInRadian, 0, 0))).Normalized();
+            var yRoundQ = (new Quaternion(new Vector3(0, globalPhysicsData.yRoundInRadian, 0))).Normalized();
+            RotationQuaternion = yRoundQ * xRoundQ * diagonalRoundQ;
+
+            Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(1, 1, 1), RotationQuaternion, CenterPosition + Translation, rotationCentre, TempRotationQuaternion);
             _shaderLight.SetMatrix4("model", model);
             GL.BindVertexArray(cubeVAO);
             texture.Use();
             specular.Use(TextureUnit.Texture1);
-            GL.DrawElements(PrimitiveType.Triangles, 3 * cubePoints.Length, DrawElementsType.UnsignedInt, 0);
+            noise.Use(TextureUnit.Texture2);
+            GL.DrawElements(PrimitiveType.Triangles, cubePoints.Length, DrawElementsType.UnsignedInt, 0);
             GL.BindVertexArray(0);
+        }
+
+        private float[] ChangePointAndNormalsPositions(float[] pointsNormalsTextCoords)
+        {
+            float[] result = new float[pointsNormalsTextCoords.Length];
+            for (int i = 0; i < pointsNormalsTextCoords.Length; i += 8)
+            {
+                var modelMtxPoints = ModelMatrix.CreateModelMatrix(1.0f, (float)Math.PI / 4, 0.0f, (float)Math.Atan(Math.Sqrt(2) / 2), new Vector3(0, (float)Math.Sqrt(3) / 2, 0));
+                var modelMtxNormals = ModelMatrix.CreateModelMatrix(1.0f, (float)Math.PI / 4, 0.0f, (float)Math.Atan(Math.Sqrt(2) / 2), new Vector3(0, 0, 0));
+
+                Vector4 position = new Vector4(pointsNormalsTextCoords[i], pointsNormalsTextCoords[i + 1], pointsNormalsTextCoords[i + 2], 1.0f);
+                Vector4 normal = new Vector4(pointsNormalsTextCoords[i + 3], pointsNormalsTextCoords[i + 4], pointsNormalsTextCoords[i + 5], 1.0f);
+
+                position = position * modelMtxPoints;
+                normal = normal * modelMtxNormals;
+
+                result[i] = position.X;
+                result[i + 1] = position.Y;
+                result[i + 2] = position.Z;
+
+                result[i + 3] = normal.X;
+                result[i + 4] = normal.Y;
+                result[i + 5] = normal.Z;
+
+                result[i + 6] = pointsNormalsTextCoords[i + 6];
+                result[i + 7] = pointsNormalsTextCoords[i + 7];
+            }
+
+            return result;
         }
     }
 }

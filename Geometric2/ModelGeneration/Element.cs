@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using Geometric2.Global;
 using Geometric2.Helpers;
 using Geometric2.MatrixHelpers;
 using Geometric2.RasterizationClasses;
@@ -28,7 +29,7 @@ namespace Geometric2.ModelGeneration
 
         }
 
-        public virtual void RenderGlElement(Shader _shader, Shader _shaderLight, Vector3 rotationCentre)
+        public virtual void RenderGlElement(Shader _shader, Shader _shaderLight, Vector3 rotationCentre, GlobalPhysicsData globalPhysicsData)
         {
 
         }
