@@ -63,8 +63,9 @@ namespace Geometric2.ModelGeneration
             {
                 if (globalPhysicsData.displayPath)
                 {
+                    _shader.SetMatrix4("model", Matrix4.Identity);
                     GenerateLines();
-                    _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Chocolate));
+                    _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Black));
                     GL.DrawElements(PrimitiveType.LineStrip, linesIndices.Length, DrawElementsType.UnsignedInt, 0 * sizeof(int));
                 }
             }

@@ -8,10 +8,10 @@ namespace Geometric2.Global
 {
     public class InitialConditionsData
     {
-        public decimal cubeEdgeLength = 1;
-        public decimal cubeDensity = 1;
-        public decimal cubeDeviation = 15;
-        public decimal angularVelocity = 15;
-        public decimal integrationStep = 0.001M;
+        public double cubeEdgeLength = 1;
+        public double cubeDensity = 1;
+        public double cubeDeviationRadian = (double)(Math.PI / 180) * 15;
+        public double angularVelocityRadian = (double)(Math.PI / 180) * 15;
+        public double integrationStep = 0.001;
     }
 }

@@ -66,8 +66,10 @@ namespace Geometric2.ModelGeneration
         {
             if (globalPhysicsData.displayPlane)
             {
+                var model = ModelMatrix.CreateModelMatrix(1, 0, 0, 0, new Vector3(2, 0, 2));
                 _shaderLight.Use();
-                _shaderLight.SetMatrix4("model", Matrix4.Identity);
+                //_shaderLight.SetMatrix4("model", Matrix4.Identity);
+                _shaderLight.SetMatrix4("model", model);
                 _shaderLight.SetInt("transparent", 0);
                 GL.BindVertexArray(planeVAO);
                 texture.Use();

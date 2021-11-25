@@ -21,8 +21,8 @@ namespace Geometric2.Global
         public InitialConditionsData InitialConditionsData = new InitialConditionsData();
 
         //Visualization Data
-        public decimal alfaAngleInRadian = 0.5M;
-        public decimal diagonalRoundInRadian = 0.0M;
-        public decimal yRoundInRadian = 0.0M;
+        public double alfaAngleInRadian = 0.5;
+        public double diagonalRoundInRadian = 0.0;
+        public double yRoundInRadian = 0.0;
     }
 }

@@ -61,6 +61,7 @@ namespace Geometric2
         private List<Element> Elements = new List<Element>();
         private Lines diagonalLine = new Lines();
         private Lines cubeLines = new Lines();
+        private Lines pathLines = new Lines();
 
         int prev_xPosMouse = -1, prev_yPosMouse = -1;
         GlobalPhysicsData globalPhysicsData = new GlobalPhysicsData();
@@ -121,58 +122,73 @@ namespace Geometric2
         {
             endSimulationButton.Enabled = true;
             startSimulationButton.Enabled = false;
+            applyConditionsButton.Enabled = false;
             if (SimulationThread != null)
             {
                 SimulationThread.Abort();
             }
 
+            if (PointListThread != null)
+            {
+                PointListThread.Abort();
+            }
+
             this.GlobalCalculationFunction();
+            this.DrawPath();
         }
 
         private void endSimulationButton_Click(object sender, EventArgs e)
         {
             endSimulationButton.Enabled = false;
             startSimulationButton.Enabled = true;
+            applyConditionsButton.Enabled = true;
             if (SimulationThread != null)
             {
                 SimulationThread.Abort();
+            }
+
+            if (PointListThread != null)
+            {
+                PointListThread.Abort();
             }
         }
 
         private void applyConditionsButton_Click(object sender, EventArgs e)
         {
             globalPhysicsData.InitialConditionsData = temporaryConditionsData;
+            globalPhysicsData.alfaAngleInRadian = (Math.PI / 180) * (double)cubeDeviationNumericUpDown.Value;
             temporaryConditionsData = new InitialConditionsData();
-            temporaryConditionsData.cubeEdgeLength = cubeEdgeLengthNumericUpDown.Value;
-            temporaryConditionsData.cubeDensity = cubeDensityNumericUpDown.Value;
-            temporaryConditionsData.cubeDeviation = cubeDeviationNumericUpDown.Value;
-            temporaryConditionsData.angularVelocity = angularVelocityNumericUpDown.Value;
-            temporaryConditionsData.integrationStep = integrationStepNumericUpDown.Value;
+            temporaryConditionsData.cubeEdgeLength = (double)cubeEdgeLengthNumericUpDown.Value;
+            temporaryConditionsData.cubeDensity = (double)cubeDensityNumericUpDown.Value;
+            temporaryConditionsData.cubeDeviationRadian = (Math.PI / 180) * (double)cubeDeviationNumericUpDown.Value;
+            temporaryConditionsData.angularVelocityRadian = (Math.PI / 180) * (double)angularVelocityNumericUpDown.Value;
+            temporaryConditionsData.integrationStep = (double)integrationStepNumericUpDown.Value;
+
         }
 
         private void cubeEdgeLengthNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            temporaryConditionsData.cubeEdgeLength = cubeEdgeLengthNumericUpDown.Value;
+            temporaryConditionsData.cubeEdgeLength = (double)cubeEdgeLengthNumericUpDown.Value;
         }
 
         private void cubeDensityNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            temporaryConditionsData.cubeDensity = cubeDensityNumericUpDown.Value;
+            temporaryConditionsData.cubeDensity = (double)cubeDensityNumericUpDown.Value;
         }
 
         private void cubeDeviationNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            temporaryConditionsData.cubeDeviation = cubeDeviationNumericUpDown.Value;
+            temporaryConditionsData.cubeDeviationRadian = (Math.PI / 180) * (double)cubeDeviationNumericUpDown.Value;
         }
 
         private void angularVelocityNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            temporaryConditionsData.angularVelocity = angularVelocityNumericUpDown.Value;
+            temporaryConditionsData.angularVelocityRadian = (Math.PI / 180) * (double)angularVelocityNumericUpDown.Value;
         }
 
         private void integrationStepNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
-            temporaryConditionsData.integrationStep = integrationStepNumericUpDown.Value;
+            temporaryConditionsData.integrationStep = (double)integrationStepNumericUpDown.Value;
         }
 
         private void GlobalCalculationFunction()
@@ -181,7 +197,7 @@ namespace Geometric2
             {
                 while (true)
                 {
-                    long nanosecondsToWait = (long)(((double)globalPhysicsData.InitialConditionsData.integrationStep) * 1000 * 1000 * 1000);
+                    long nanosecondsToWait = (long)(globalPhysicsData.InitialConditionsData.integrationStep * 1000 * 1000 * 1000);
                     long nanoPrev = 10000L * Stopwatch.GetTimestamp();
                     nanoPrev /= TimeSpan.TicksPerMillisecond;
                     nanoPrev *= 100L;
@@ -189,12 +205,14 @@ namespace Geometric2
 
                     //Tutaj kod symulacji co wykonuje się co delta (globalPhysicsData.InitialConditionsData.integrationStep)
                     //Obliczenia
+                    //TYLKO STAD BRAĆ DANE DO OBLICZEN  globalPhysicsData. itd dalej
+
 
 
                     //UStawienie odpowiednich wartości dla sześcianu
-                    globalPhysicsData.alfaAngleInRadian += 0.000001M;
-                    globalPhysicsData.diagonalRoundInRadian += 0.001M;
-                    globalPhysicsData.yRoundInRadian += 0.00001M;
+                    globalPhysicsData.alfaAngleInRadian += 0.000001;
+                    globalPhysicsData.diagonalRoundInRadian += 0.001;
+                    globalPhysicsData.yRoundInRadian += 0.00001;
 
 
                     //Odczekanie pozostałego czasu
@@ -213,6 +231,30 @@ namespace Geometric2
             });
 
             SimulationThread.Start();
+        }
+
+        private void DrawPath()
+        {
+            PointListThread = new Thread(() =>
+            {
+                var diagonalRoundQ = (new Quaternion(new Vector3(0, (float)globalPhysicsData.diagonalRoundInRadian, 0))).Normalized();
+                var xRoundQ = (new Quaternion(new Vector3((float)globalPhysicsData.alfaAngleInRadian, 0, 0))).Normalized();
+                var yRoundQ = (new Quaternion(new Vector3(0, (float)globalPhysicsData.yRoundInRadian, 0))).Normalized();
+                var RotationQuaternion = yRoundQ * xRoundQ * diagonalRoundQ;
+
+                _shader.Use();
+                var cubeSize = (float)globalPhysicsData.InitialConditionsData.cubeEdgeLength;
+                Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(cubeSize, cubeSize, cubeSize), RotationQuaternion, new Vector3(0,0,0), new Vector3(0,0,0), Quaternion.FromEulerAngles(0.0f, 0.0f, 0.0f));
+
+
+                //var topPointInModelSpace = new Vector4(topPoint, 1.0f) * modelMtxPoints;
+                //for (int i = 0; i < 1000000; i++)
+                //{
+                //    pathLines.linePoints.Add(new Vector3(topPointInModelSpace));
+                //}
+            });
+
+            PointListThread.Start();
         }
     }
 }

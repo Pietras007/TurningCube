@@ -19,8 +19,9 @@ namespace Geometric2
     {
         private void Generate()
         {
+            var topPoint = new Vector3(0, (float)Math.Sqrt(3), 0);
             diagonalLine.IsDiagonalLine = true;
-            diagonalLine.linePoints = new List<Vector3>() { new Vector3(0, 0, 0), new Vector3(0, (float)Math.Sqrt(3), 0) };
+            diagonalLine.linePoints = new List<Vector3>() { new Vector3(0, 0, 0), topPoint };
 
             List<Vector3> cubeLinePoints = new List<Vector3>()
             {
@@ -45,6 +46,13 @@ namespace Geometric2
             {
                 cubeLines.linePoints.Add(new Vector3(new Vector4(p, 1.0f) * modelMtxPoints));
             }
+
+            pathLines.IsMoveLine = true;
+            var topPointInModelSpace = new Vector4(topPoint, 1.0f) * modelMtxPoints;
+            for (int i = 0; i < 1000000; i++)
+            {
+                pathLines.linePoints.Add(new Vector3(topPointInModelSpace));
+            }
         }
 
         private void glControl1_Load(object sender, EventArgs e)
@@ -55,6 +63,7 @@ namespace Geometric2
             Elements.Add(diagonalLine);
             Elements.Add(cubeLines);
             Elements.Add(cube);
+            Elements.Add(pathLines);
             GL.ClearColor(Color.LightCyan);
             GL.Enable(EnableCap.DepthTest);
             _shader = new Shader("./../../../Shaders/VertexShaderLines.vert", "./../../../Shaders/FragmentShaderLines.frag");
@@ -116,8 +125,8 @@ namespace Geometric2
             {
 
                 GL.Enable(EnableCap.Blend);
-                GL.BlendFunc( BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-                el.RenderGlElement(_shader, _shaderLight, new Vector3(0,0,0), globalPhysicsData);
+                GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                el.RenderGlElement(_shader, _shaderLight, new Vector3(0, 0, 0), globalPhysicsData);
             }
 
         }
