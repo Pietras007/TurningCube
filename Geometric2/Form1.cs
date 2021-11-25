@@ -191,13 +191,25 @@ namespace Geometric2
             temporaryConditionsData.integrationStep = (double)integrationStepNumericUpDown.Value;
         }
 
+        private Vector3d GetInertiaTensor()
+        {
+            var inertiaTensorBaseX = 11d / 12d;
+            var inertiaTensorBaseY = 1d / 6d;
+            var inertiaTensorBaseZ = 11d / 12d;
+
+            var edge = globalPhysicsData.InitialConditionsData.cubeEdgeLength;
+            var density = globalPhysicsData.InitialConditionsData.cubeDensity;
+
+            return Math.Pow(edge, 5d) * density * new Vector3d(inertiaTensorBaseX, inertiaTensorBaseY, inertiaTensorBaseZ);
+        }
+
         private void GlobalCalculationFunction()
         {
             SimulationThread = new Thread(() =>
             {
                 while (true)
                 {
-                    long nanosecondsToWait = (long)(globalPhysicsData.InitialConditionsData.integrationStep * 1000 * 1000 * 1000);
+                    long nanosecondsToWait = (long)(globalPhysicsData.InitialConditionsData.integrationStep * 1000_1000_1000);
                     long nanoPrev = 10000L * Stopwatch.GetTimestamp();
                     nanoPrev /= TimeSpan.TicksPerMillisecond;
                     nanoPrev *= 100L;
