@@ -249,12 +249,22 @@ namespace Geometric2
         {
             PointListThread = new Thread(() =>
             {
-                //pathLines.linePointsList.
+                var topPoint = new Vector3(0, (float)Math.Sqrt(3), 0);
+                var topPointInModelSpace = new Vector4(topPoint, 1.0f) * CreateModelMatrixForPoint.CreateMatrix(globalPhysicsData);
+                List<Vector3> newPointList = new List<Vector3>();
+                for (int i = 0; i < 1000_000; i++)
+                {
+                    newPointList.Add(new Vector3(topPointInModelSpace));
+                }
+
+                lock (globalPhysicsData.lockPathPointsList)
+                {
+                    pathLines.linePointsList = newPointList;
+                }
 
                 while (true)
                 {
-                    var topPoint = new Vector3(0, (float)Math.Sqrt(3), 0);
-                    var topPointInModelSpace = new Vector4(topPoint, 1.0f) * CreateModelMatrixForPoint.CreateMatrix(globalPhysicsData);
+                    topPointInModelSpace = new Vector4(topPoint, 1.0f) * CreateModelMatrixForPoint.CreateMatrix(globalPhysicsData);
                     pathLines.linePointsList.Add(new Vector3(topPointInModelSpace));
                     Thread.Sleep(10);
                 }

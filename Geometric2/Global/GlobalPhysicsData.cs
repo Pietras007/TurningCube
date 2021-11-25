@@ -8,6 +8,9 @@ namespace Geometric2.Global
 {
     public class GlobalPhysicsData
     {
+        //Help
+        public object lockPathPointsList = new object { };
+
         //Visualization Settings
         public bool displayCube = true;
         public bool displayDiagonal = true;
@@ -21,7 +24,7 @@ namespace Geometric2.Global
         public InitialConditionsData InitialConditionsData = new InitialConditionsData();
 
         //Visualization Data
-        public double alfaAngleInRadian = 0.5;
+        public double alfaAngleInRadian = (double)(Math.PI / 180) * 15;
         public double diagonalRoundInRadian = 0.0;
         public double yRoundInRadian = 0.0;
     }
