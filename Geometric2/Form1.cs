@@ -56,6 +56,7 @@ namespace Geometric2
 
         private XyzLines xyzLines = new XyzLines();
         private Cube cube = new Cube();
+        private Plane plane = new Plane();
         private List<Element> Elements = new List<Element>();
         private Lines diagonalLine = new Lines();
         private Lines cubeLines = new Lines();
@@ -83,6 +84,11 @@ namespace Geometric2
         private void displayCubeCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             globalPhysicsData.displayCube = displayCubeCheckBox.Checked;
+        }
+
+        private void displayWallsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            globalPhysicsData.displayWalls = displayWallsCheckBox.Checked;
         }
 
         private void displayDiagonalCheckBox_CheckedChanged(object sender, EventArgs e)

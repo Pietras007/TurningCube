@@ -19,19 +19,26 @@ uniform Light light;
 uniform Material material;
 uniform vec3 viewPos;
 
+uniform int transparent;
+
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
 
 void main()
 {
-    vec4 transparency = texture(material.noise, TexCoords);
-    if((transparency.r + transparency.g + transparency.b) / 3.0f < 0.7f)
-    {
-        discard;
-    }
+    vec4 materialColor  = vec4(255,255,0,0.8f);
 
-    vec4 materialColor = texture(material.diffuse, TexCoords);
+    if(transparent != 0)
+    {    
+        vec4 transparency = texture(material.noise, TexCoords);
+        if((transparency.r + transparency.g + transparency.b) / 3.0f <0.0f)
+        {
+            discard;
+        }
+
+        materialColor = texture(material.diffuse, TexCoords);
+    }
 
     //Ambient
     vec3 lightPos = light.position;

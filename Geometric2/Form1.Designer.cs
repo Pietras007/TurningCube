@@ -40,6 +40,7 @@ namespace Geometric2
             this.cameraLightCheckBox = new System.Windows.Forms.CheckBox();
             this.startSimulationButton = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.displayWallsCheckBox = new System.Windows.Forms.CheckBox();
             this.applyConditionsButton = new System.Windows.Forms.Button();
             this.integrationStepNumericUpDown = new System.Windows.Forms.NumericUpDown();
             this.angularVelocityNumericUpDown = new System.Windows.Forms.NumericUpDown();
@@ -164,6 +165,7 @@ namespace Geometric2
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.displayWallsCheckBox);
             this.panel1.Controls.Add(this.applyConditionsButton);
             this.panel1.Controls.Add(this.integrationStepNumericUpDown);
             this.panel1.Controls.Add(this.angularVelocityNumericUpDown);
@@ -192,6 +194,19 @@ namespace Geometric2
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(252, 885);
             this.panel1.TabIndex = 6;
+            // 
+            // displayWallsCheckBox
+            // 
+            this.displayWallsCheckBox.AutoSize = true;
+            this.displayWallsCheckBox.Checked = true;
+            this.displayWallsCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.displayWallsCheckBox.Location = new System.Drawing.Point(21, 492);
+            this.displayWallsCheckBox.Name = "displayWallsCheckBox";
+            this.displayWallsCheckBox.Size = new System.Drawing.Size(117, 17);
+            this.displayWallsCheckBox.TabIndex = 28;
+            this.displayWallsCheckBox.Text = "Display Cube Walls";
+            this.displayWallsCheckBox.UseVisualStyleBackColor = true;
+            this.displayWallsCheckBox.CheckedChanged += new System.EventHandler(this.displayWallsCheckBox_CheckedChanged);
             // 
             // applyConditionsButton
             // 
@@ -352,7 +367,7 @@ namespace Geometric2
             this.displayPlaneCheckBox.AutoSize = true;
             this.displayPlaneCheckBox.Checked = true;
             this.displayPlaneCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.displayPlaneCheckBox.Location = new System.Drawing.Point(134, 492);
+            this.displayPlaneCheckBox.Location = new System.Drawing.Point(146, 492);
             this.displayPlaneCheckBox.Name = "displayPlaneCheckBox";
             this.displayPlaneCheckBox.Size = new System.Drawing.Size(90, 17);
             this.displayPlaneCheckBox.TabIndex = 16;
@@ -365,7 +380,7 @@ namespace Geometric2
             this.displayDiagonalCheckBox.AutoSize = true;
             this.displayDiagonalCheckBox.Checked = true;
             this.displayDiagonalCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.displayDiagonalCheckBox.Location = new System.Drawing.Point(21, 492);
+            this.displayDiagonalCheckBox.Location = new System.Drawing.Point(21, 515);
             this.displayDiagonalCheckBox.Name = "displayDiagonalCheckBox";
             this.displayDiagonalCheckBox.Size = new System.Drawing.Size(105, 17);
             this.displayDiagonalCheckBox.TabIndex = 15;
@@ -378,7 +393,7 @@ namespace Geometric2
             this.displayPathCheckBox.AutoSize = true;
             this.displayPathCheckBox.Checked = true;
             this.displayPathCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.displayPathCheckBox.Location = new System.Drawing.Point(134, 469);
+            this.displayPathCheckBox.Location = new System.Drawing.Point(146, 469);
             this.displayPathCheckBox.Name = "displayPathCheckBox";
             this.displayPathCheckBox.Size = new System.Drawing.Size(85, 17);
             this.displayPathCheckBox.TabIndex = 14;
@@ -393,9 +408,9 @@ namespace Geometric2
             this.displayCubeCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.displayCubeCheckBox.Location = new System.Drawing.Point(21, 469);
             this.displayCubeCheckBox.Name = "displayCubeCheckBox";
-            this.displayCubeCheckBox.Size = new System.Drawing.Size(88, 17);
+            this.displayCubeCheckBox.Size = new System.Drawing.Size(121, 17);
             this.displayCubeCheckBox.TabIndex = 13;
-            this.displayCubeCheckBox.Text = "Display Cube";
+            this.displayCubeCheckBox.Text = "Display Cube Edges";
             this.displayCubeCheckBox.UseVisualStyleBackColor = true;
             this.displayCubeCheckBox.CheckedChanged += new System.EventHandler(this.displayCubeCheckBox_CheckedChanged);
             // 
@@ -527,6 +542,7 @@ namespace Geometric2
         private System.Windows.Forms.NumericUpDown cubeDensityNumericUpDown;
         private System.Windows.Forms.NumericUpDown cubeEdgeLengthNumericUpDown;
         private System.Windows.Forms.Button applyConditionsButton;
+        private System.Windows.Forms.CheckBox displayWallsCheckBox;
     }
 }
 

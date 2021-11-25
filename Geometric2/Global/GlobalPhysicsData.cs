@@ -13,6 +13,7 @@ namespace Geometric2.Global
         public bool displayDiagonal = true;
         public bool displayPath = true;
         public bool displayPlane = true;
+        public bool displayWalls = true;
         public int numberOfPointsToShow = 1000;
 
         //Data from user

@@ -103,7 +103,7 @@ namespace Geometric2.ModelGeneration
 
         public override void RenderGlElement(Shader _shader, Shader _shaderLight, Vector3 rotationCentre, GlobalPhysicsData globalPhysicsData)
         {
-            if (globalPhysicsData.displayCube)
+            if (globalPhysicsData.displayWalls)
             {
                 _shaderLight.Use();
 
@@ -114,6 +114,7 @@ namespace Geometric2.ModelGeneration
                 var cubeSize = (float)globalPhysicsData.InitialConditionsData.cubeEdgeLength;
                 Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(cubeSize, cubeSize, cubeSize), RotationQuaternion, CenterPosition + Translation, rotationCentre, TempRotationQuaternion);
                 _shaderLight.SetMatrix4("model", model);
+                _shaderLight.SetInt("transparent", 1);
                 GL.BindVertexArray(cubeVAO);
                 texture.Use();
                 specular.Use(TextureUnit.Texture1);

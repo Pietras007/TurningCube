@@ -51,6 +51,7 @@ namespace Geometric2
         {
             Generate();
             Elements.Add(xyzLines);
+            Elements.Add(plane);
             Elements.Add(diagonalLine);
             Elements.Add(cubeLines);
             Elements.Add(cube);

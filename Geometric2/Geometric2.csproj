@@ -90,6 +90,7 @@
     <Compile Include="MatrixHelpers\ScaleMatrix.cs" />
     <Compile Include="MatrixHelpers\TranslationMatrix.cs" />
     <Compile Include="MatrixHelpers\ViewMatrix.cs" />
+    <Compile Include="ModelGeneration\Plane.cs" />
     <Compile Include="ModelGeneration\Cube.cs" />
     <Compile Include="ModelGeneration\Element.cs" />
     <Compile Include="ModelGeneration\Lines.cs" />
