@@ -107,9 +107,9 @@ namespace Geometric2.ModelGeneration
             {
                 _shaderLight.Use();
 
-                var diagonalRoundQ = (new Quaternion(new Vector3(0, globalPhysicsData.diagonalRoundInRadian, 0))).Normalized();
-                var xRoundQ = (new Quaternion(new Vector3(globalPhysicsData.alfaAngleInRadian, 0, 0))).Normalized();
-                var yRoundQ = (new Quaternion(new Vector3(0, globalPhysicsData.yRoundInRadian, 0))).Normalized();
+                var diagonalRoundQ = (new Quaternion(new Vector3(0, (float)globalPhysicsData.diagonalRoundInRadian, 0))).Normalized();
+                var xRoundQ = (new Quaternion(new Vector3((float)globalPhysicsData.alfaAngleInRadian, 0, 0))).Normalized();
+                var yRoundQ = (new Quaternion(new Vector3(0, (float)globalPhysicsData.yRoundInRadian, 0))).Normalized();
                 RotationQuaternion = yRoundQ * xRoundQ * diagonalRoundQ;
                 var cubeSize = (float)globalPhysicsData.InitialConditionsData.cubeEdgeLength;
                 Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(cubeSize, cubeSize, cubeSize), RotationQuaternion, CenterPosition + Translation, rotationCentre, TempRotationQuaternion);

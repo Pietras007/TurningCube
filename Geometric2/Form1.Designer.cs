@@ -227,6 +227,11 @@ namespace Geometric2
             0,
             0,
             0});
+            this.integrationStepNumericUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            327680});
             this.integrationStepNumericUpDown.Name = "integrationStepNumericUpDown";
             this.integrationStepNumericUpDown.Size = new System.Drawing.Size(120, 20);
             this.integrationStepNumericUpDown.TabIndex = 26;

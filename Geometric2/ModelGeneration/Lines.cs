@@ -40,9 +40,9 @@ namespace Geometric2.ModelGeneration
         public override void RenderGlElement(Shader _shader, Shader _shaderLight, Vector3 rotationCentre, GlobalPhysicsData globalPhysicsData)
         {
 
-            var diagonalRoundQ = (new Quaternion(new Vector3(0, globalPhysicsData.diagonalRoundInRadian, 0))).Normalized();
-            var xRoundQ = (new Quaternion(new Vector3(globalPhysicsData.alfaAngleInRadian, 0, 0))).Normalized();
-            var yRoundQ = (new Quaternion(new Vector3(0, globalPhysicsData.yRoundInRadian, 0))).Normalized();
+            var diagonalRoundQ = (new Quaternion(new Vector3(0, (float)globalPhysicsData.diagonalRoundInRadian, 0))).Normalized();
+            var xRoundQ = (new Quaternion(new Vector3((float)globalPhysicsData.alfaAngleInRadian, 0, 0))).Normalized();
+            var yRoundQ = (new Quaternion(new Vector3(0, (float)globalPhysicsData.yRoundInRadian, 0))).Normalized();
             RotationQuaternion = yRoundQ * xRoundQ * diagonalRoundQ;
 
             _shader.Use();

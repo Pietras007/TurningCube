@@ -47,6 +47,7 @@ namespace Geometric2
         }
 
         private Thread SimulationThread = null;
+        private Thread PointListThread = null;
         private InitialConditionsData temporaryConditionsData = new InitialConditionsData();
 
         private Shader _shaderLight;
@@ -178,7 +179,37 @@ namespace Geometric2
         {
             SimulationThread = new Thread(() =>
             {
-                //Tutaj kod symulacji
+                while (true)
+                {
+                    long nanosecondsToWait = (long)(((double)globalPhysicsData.InitialConditionsData.integrationStep) * 1000 * 1000 * 1000);
+                    long nanoPrev = 10000L * Stopwatch.GetTimestamp();
+                    nanoPrev /= TimeSpan.TicksPerMillisecond;
+                    nanoPrev *= 100L;
+
+
+                    //Tutaj kod symulacji co wykonuje się co delta (globalPhysicsData.InitialConditionsData.integrationStep)
+                    //Obliczenia
+
+
+                    //UStawienie odpowiednich wartości dla sześcianu
+                    globalPhysicsData.alfaAngleInRadian += 0.000001M;
+                    globalPhysicsData.diagonalRoundInRadian += 0.001M;
+                    globalPhysicsData.yRoundInRadian += 0.00001M;
+
+
+                    //Odczekanie pozostałego czasu
+                    long nanoPost;
+                    while (true)
+                    {
+                        nanoPost = 10000L * Stopwatch.GetTimestamp();
+                        nanoPost /= TimeSpan.TicksPerMillisecond;
+                        nanoPost *= 100L;
+                        if (nanoPost - nanoPrev > nanosecondsToWait)
+                        {
+                            break;
+                        }
+                    }
+                }
             });
 
             SimulationThread.Start();
