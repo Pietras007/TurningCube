@@ -51,21 +51,30 @@ namespace Geometric2.ModelGeneration
             GL.BindVertexArray(linesVAO);
             if (IsDiagonalLine)
             {
-                GenerateLines();
-                _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Purple));
-                GL.DrawElements(PrimitiveType.Lines, linesIndices.Length, DrawElementsType.UnsignedInt, 0 * sizeof(int));
+                if (globalPhysicsData.displayDiagonal)
+                {
+                    GenerateLines();
+                    _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Purple));
+                    GL.DrawElements(PrimitiveType.Lines, linesIndices.Length, DrawElementsType.UnsignedInt, 0 * sizeof(int));
+                }
             }
             else if (IsMoveLine)
             {
-                GenerateLines();
-                _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Chocolate));
-                GL.DrawElements(PrimitiveType.LineStrip, linesIndices.Length, DrawElementsType.UnsignedInt, 0 * sizeof(int));
+                if (globalPhysicsData.displayPath)
+                {
+                    GenerateLines();
+                    _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Chocolate));
+                    GL.DrawElements(PrimitiveType.LineStrip, linesIndices.Length, DrawElementsType.UnsignedInt, 0 * sizeof(int));
+                }
             }
             else
             {
-                GenerateLines();
-                _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Black));
-                GL.DrawElements(PrimitiveType.Lines, linesIndices.Length, DrawElementsType.UnsignedInt, 0 * sizeof(int));
+                if (globalPhysicsData.displayCube)
+                {
+                    GenerateLines();
+                    _shader.SetVector3("fragmentColor", ColorHelper.ColorToVector(Color.Black));
+                    GL.DrawElements(PrimitiveType.Lines, linesIndices.Length, DrawElementsType.UnsignedInt, 0 * sizeof(int));
+                }
             }
 
             GL.BindVertexArray(0);
@@ -76,7 +85,8 @@ namespace Geometric2.ModelGeneration
             var tempLinesPoints = new float[3 * linePoints.Count];
             var tempLinesIndices = new uint[linePoints.Count];
             int idx = 0;
-            foreach (var p in linePoints)
+            var tempLinePointsReference = linePoints;
+            foreach (var p in tempLinePointsReference)
             {
                 tempLinesPoints[3 * idx] = p.X;
                 tempLinesPoints[3 * idx + 1] = p.Y;

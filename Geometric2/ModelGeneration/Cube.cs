@@ -103,21 +103,24 @@ namespace Geometric2.ModelGeneration
 
         public override void RenderGlElement(Shader _shader, Shader _shaderLight, Vector3 rotationCentre, GlobalPhysicsData globalPhysicsData)
         {
-            _shaderLight.Use();
+            if (globalPhysicsData.displayCube)
+            {
+                _shaderLight.Use();
 
-            var diagonalRoundQ = (new Quaternion(new Vector3(0, globalPhysicsData.diagonalRoundInRadian, 0))).Normalized();
-            var xRoundQ = (new Quaternion(new Vector3(globalPhysicsData.alfaAngleInRadian, 0, 0))).Normalized();
-            var yRoundQ = (new Quaternion(new Vector3(0, globalPhysicsData.yRoundInRadian, 0))).Normalized();
-            RotationQuaternion = yRoundQ * xRoundQ * diagonalRoundQ;
+                var diagonalRoundQ = (new Quaternion(new Vector3(0, globalPhysicsData.diagonalRoundInRadian, 0))).Normalized();
+                var xRoundQ = (new Quaternion(new Vector3(globalPhysicsData.alfaAngleInRadian, 0, 0))).Normalized();
+                var yRoundQ = (new Quaternion(new Vector3(0, globalPhysicsData.yRoundInRadian, 0))).Normalized();
+                RotationQuaternion = yRoundQ * xRoundQ * diagonalRoundQ;
 
-            Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(1, 1, 1), RotationQuaternion, CenterPosition + Translation, rotationCentre, TempRotationQuaternion);
-            _shaderLight.SetMatrix4("model", model);
-            GL.BindVertexArray(cubeVAO);
-            texture.Use();
-            specular.Use(TextureUnit.Texture1);
-            noise.Use(TextureUnit.Texture2);
-            GL.DrawElements(PrimitiveType.Triangles, cubePoints.Length, DrawElementsType.UnsignedInt, 0);
-            GL.BindVertexArray(0);
+                Matrix4 model = ModelMatrix.CreateModelMatrix(new Vector3(1, 1, 1), RotationQuaternion, CenterPosition + Translation, rotationCentre, TempRotationQuaternion);
+                _shaderLight.SetMatrix4("model", model);
+                GL.BindVertexArray(cubeVAO);
+                texture.Use();
+                specular.Use(TextureUnit.Texture1);
+                noise.Use(TextureUnit.Texture2);
+                GL.DrawElements(PrimitiveType.Triangles, cubePoints.Length, DrawElementsType.UnsignedInt, 0);
+                GL.BindVertexArray(0);
+            }
         }
 
         private float[] ChangePointAndNormalsPositions(float[] pointsNormalsTextCoords)

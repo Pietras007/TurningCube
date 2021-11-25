@@ -46,6 +46,9 @@ namespace Geometric2
             cameraLightCheckBox.Checked = true;
         }
 
+        private Thread SimulationThread = null;
+        private InitialConditionsData temporaryConditionsData = new InitialConditionsData();
+
         private Shader _shaderLight;
         private Shader _shader;
         private Camera _camera;
@@ -77,9 +80,102 @@ namespace Geometric2
             cameraLight = cameraLightCheckBox.Checked;
         }
 
+        private void displayCubeCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            globalPhysicsData.displayCube = displayCubeCheckBox.Checked;
+        }
+
+        private void displayDiagonalCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            globalPhysicsData.displayDiagonal = displayDiagonalCheckBox.Checked;
+        }
+
+        private void displayPathCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            globalPhysicsData.displayPath = displayPathCheckBox.Checked;
+        }
+
+        private void displayPlaneCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            globalPhysicsData.displayPlane = displayPlaneCheckBox.Checked;
+        }
+
+        private void pathLengthUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            globalPhysicsData.numberOfPointsToShow = (int)pathLengthUpDown.Value;
+        }
+
+        private void gravityOnCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            globalPhysicsData.gravityOn = gravityOnCheckBox.Checked;
+        }
+
+        private void startSimulationButton_Click(object sender, EventArgs e)
+        {
+            endSimulationButton.Enabled = true;
+            startSimulationButton.Enabled = false;
+            if (SimulationThread != null)
+            {
+                SimulationThread.Abort();
+            }
+
+            this.GlobalCalculationFunction();
+        }
+
+        private void endSimulationButton_Click(object sender, EventArgs e)
+        {
+            endSimulationButton.Enabled = false;
+            startSimulationButton.Enabled = true;
+            if (SimulationThread != null)
+            {
+                SimulationThread.Abort();
+            }
+        }
+
+        private void applyConditionsButton_Click(object sender, EventArgs e)
+        {
+            globalPhysicsData.InitialConditionsData = temporaryConditionsData;
+            temporaryConditionsData = new InitialConditionsData();
+            temporaryConditionsData.cubeEdgeLength = cubeEdgeLengthNumericUpDown.Value;
+            temporaryConditionsData.cubeDensity = cubeDensityNumericUpDown.Value;
+            temporaryConditionsData.cubeDeviation = cubeDeviationNumericUpDown.Value;
+            temporaryConditionsData.angularVelocity = angularVelocityNumericUpDown.Value;
+            temporaryConditionsData.integrationStep = integrationStepNumericUpDown.Value;
+        }
+
+        private void cubeEdgeLengthNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            temporaryConditionsData.cubeEdgeLength = cubeEdgeLengthNumericUpDown.Value;
+        }
+
+        private void cubeDensityNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            temporaryConditionsData.cubeDensity = cubeDensityNumericUpDown.Value;
+        }
+
+        private void cubeDeviationNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            temporaryConditionsData.cubeDeviation = cubeDeviationNumericUpDown.Value;
+        }
+
+        private void angularVelocityNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            temporaryConditionsData.angularVelocity = angularVelocityNumericUpDown.Value;
+        }
+
+        private void integrationStepNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            temporaryConditionsData.integrationStep = integrationStepNumericUpDown.Value;
+        }
+
         private void GlobalCalculationFunction()
         {
+            SimulationThread = new Thread(() =>
+            {
+                //Tutaj kod symulacji
+            });
 
+            SimulationThread.Start();
         }
     }
 }
