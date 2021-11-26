@@ -193,7 +193,7 @@ namespace Geometric2
         private static PhysicsStepData GetInitialPhysicsStepData(GlobalPhysicsData data)
         {
             PhysicsStepData physicsStepData = new PhysicsStepData();
-            physicsStepData.quaternion = Quaterniond.FromEulerAngles(data.InitialConditionsData.cubeDeviationRadian, 0, 0).Normalized();
+            physicsStepData.quaternion = Quaterniond.FromEulerAngles(0, 0, data.InitialConditionsData.cubeDeviationRadian).Normalized();//changed order of angles due to some issue
             physicsStepData.angularVelocity = data.InitialConditionsData.angularVelocityRadian * Vector3d.UnitY;
 
             return physicsStepData;
