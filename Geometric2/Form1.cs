@@ -210,9 +210,9 @@ namespace Geometric2
             var N = Vector3d.Zero;
             if (globalPhysicsData.gravityOn)
             {
-                var gravityRotated = (quaternion * globalPhysicsData.gravitationQuaternion * quaternion.Inverted()).Xyz;
+                var gravityRotated = (Quaterniond.Conjugate(quaternion) * globalPhysicsData.gravitationQuaternion * quaternion).Xyz;
                 gravityRotated *= globalPhysicsData.InitialConditionsData.mass;
-                var massCentreRotated = (quaternion * globalPhysicsData.InitialConditionsData.massCentreQuaternion * quaternion.Inverted()).Xyz;
+                var massCentreRotated = (Quaterniond.Conjugate(quaternion) * globalPhysicsData.InitialConditionsData.massCentreQuaternion * quaternion).Xyz;
                 N = Vector3d.Cross(globalPhysicsData.InitialConditionsData.massCentre, gravityRotated);
             }
             return N;
@@ -344,7 +344,7 @@ namespace Geometric2
                         double W_Z = ((N.Z + (I.X - I.Y) * W.X * W.Y) / I.Z) * deltaTime + W.Z;
 
 
-                        Quaterniond Q_new = 0.5 * Q * new Quaterniond(W_Z, W_Y, W_Z, 0) * deltaTime + Q;
+                        Quaterniond Q_new = 0.5 * Q * new Quaterniond(W_X, W_Y, W_Z, 0) * deltaTime + Q;
                         //Q_new.Normalize();
 
                         if (W_X > 1e-1)
@@ -364,10 +364,10 @@ namespace Geometric2
 
                         //UStawienie odpowiednich wartości dla sześcianu
                         //globalPhysicsData.alfaAngleInRadian += 0.000001;
-                        globalPhysicsData.diagonalRoundInRadianX += W_X * deltaTime;//W wplywa na srodek ciezkosci wiec nie wiem czy to dobry sposob xd
-                        globalPhysicsData.diagonalRoundInRadianY += W_Y * deltaTime;
-                        globalPhysicsData.diagonalRoundInRadianZ += W_Z * deltaTime;
-                        globalPhysicsData.yRoundInRadian += 0.00001;
+                        //globalPhysicsData.diagonalRoundInRadianX += W_X * deltaTime;//W wplywa na srodek ciezkosci wiec nie wiem czy to dobry sposob xd
+                        //globalPhysicsData.diagonalRoundInRadianY += W_Y * deltaTime;
+                        //globalPhysicsData.diagonalRoundInRadianZ += W_Z * deltaTime;
+                        //globalPhysicsData.yRoundInRadian += 0.00001;
 
                         globalPhysicsData.rotationQuaternion = Q_new.ConvertToQuaternion();
                     }
