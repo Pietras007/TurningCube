@@ -148,7 +148,6 @@ namespace Geometric2
         private void applyConditionsButton_Click(object sender, EventArgs e)
         {
             globalPhysicsData.InitialConditionsData = temporaryConditionsData;
-            //globalPhysicsData.alfaAngleInRadian = (Math.PI / 180) * (double)cubeDeviationNumericUpDown.Value;
             temporaryConditionsData = new InitialConditionsData();
             temporaryConditionsData.cubeEdgeLength = (double)cubeEdgeLengthNumericUpDown.Value;
             temporaryConditionsData.cubeDensity = (double)cubeDensityNumericUpDown.Value;
@@ -212,7 +211,6 @@ namespace Geometric2
             {
                 var gravityRotated = (Quaterniond.Conjugate(quaternion) * globalPhysicsData.gravitationQuaternion * quaternion).Xyz;
                 gravityRotated *= globalPhysicsData.InitialConditionsData.mass;
-                var massCentreRotated = (Quaterniond.Conjugate(quaternion) * globalPhysicsData.InitialConditionsData.massCentreQuaternion * quaternion).Xyz;
                 N = Vector3d.Cross(globalPhysicsData.InitialConditionsData.massCentre, gravityRotated);
             }
             return N;
@@ -228,7 +226,7 @@ namespace Geometric2
 
         private static Quaterniond CalculateQ(Vector3d W, Quaterniond Q)
         {
-            return 0.5 * new Quaterniond(W, 0) * Q;
+            return 0.5 * Q * new Quaterniond(W, 0);
         }
 
         private PhysicsStepData physicsStepData;
@@ -248,11 +246,6 @@ namespace Geometric2
                     var I = globalPhysicsData.InitialConditionsData.inertiaTensor;
                     var W = physicsStepData.angularVelocity;
                     var Q = physicsStepData.quaternion;
-                    //var W_quat = new Quaterniond(W, 0);
-
-                    //Tutaj kod symulacji co wykonuje się co delta (globalPhysicsData.InitialConditionsData.integrationStep)
-                    //Obliczenia
-                    //TYLKO STAD BRAĆ DANE DO OBLICZEN  globalPhysicsData. itd dalej
 
                     bool rungeKutta = true;
 
@@ -270,24 +263,24 @@ namespace Geometric2
                         //k2
                         var N_k2 = CalculateN(globalPhysicsData, ref QQ_k1);
 
-                        var W_k2 = CalculateW(N_k2, I, WW_k1);
-                        var Q_k2 = CalculateQ(WW_k1, QQ_k1);
+                        var W_k2 = deltaTime * CalculateW(N_k2, I, WW_k1);
+                        var Q_k2 = deltaTime * CalculateQ(WW_k1, QQ_k1);
 
                         var WW_k2 = W + W_k2 * 0.5;
                         var QQ_k2 = (Q + Q_k2 * 0.5).Normalized();
                         //k3
                         var N_k3 = CalculateN(globalPhysicsData, ref QQ_k2);
 
-                        var W_k3 = CalculateW(N_k3, I, WW_k2);
-                        var Q_k3 = CalculateQ(WW_k2, QQ_k2);
+                        var W_k3 = deltaTime * CalculateW(N_k3, I, WW_k2);
+                        var Q_k3 = deltaTime * CalculateQ(WW_k2, QQ_k2);
 
                         var WW_k3 = W + W_k3;
                         var QQ_k3 = (Q + Q_k3).Normalized();
                         //k4
                         var N_k4 = CalculateN(globalPhysicsData, ref QQ_k3);
 
-                        var W_k4 = CalculateW(N_k4, I, WW_k3);
-                        var Q_k4 = CalculateQ(WW_k3, QQ_k3);
+                        var W_k4 = deltaTime * CalculateW(N_k4, I, WW_k3);
+                        var Q_k4 = deltaTime * CalculateQ(WW_k3, QQ_k3);
 
                         var W_new = W + (1d / 6d) * W_k1 + (1d / 3d) * W_k2 + (1d / 3d) * W_k3 + (1d / 6d) * W_k4;
                         var Q_new = Q + (1d / 6d) * Q_k1 + (1d / 3d) * Q_k2 + (1d / 3d) * Q_k3 + (1d / 6d) * Q_k4;
@@ -298,41 +291,6 @@ namespace Geometric2
 
                         physicsStepData.angularVelocity = W_new;
                         physicsStepData.quaternion = Q_new;
-
-                        //if (W_X > 1e-1)
-                        //{
-                        //    //Debug.WriteLine($"W_X is getting large {W_X}");
-                        //}
-
-                        //if (W_Z > 1e-1)
-                        //{
-                        //    //Debug.WriteLine($"W_Z is getting large {W_Z}");
-                        //}
-
-                        //Quaterniond Q_new = 0.5 * Q * new Quaterniond(W_Z, W_Y, W_Z, 0) * deltaTime + Q;
-                        //Q_new.Normalize();
-
-                        //physicsStepData.angularVelocity = new Vector3d(W_X, W_Y, W_Z);
-                        //physicsStepData.quaternion = Q_new;
-
-
-                        ////UStawienie odpowiednich wartości dla sześcianu
-                        //globalPhysicsData.alfaAngleInRadian += 0.000001;
-                        //globalPhysicsData.diagonalRoundInRadianX += W_X * deltaTime;//W wplywa na srodek ciezkosci wiec nie wiem czy to dobry sposob xd
-                        //globalPhysicsData.diagonalRoundInRadianY += W_Y * deltaTime;
-                        //globalPhysicsData.diagonalRoundInRadianZ += W_Z * deltaTime;
-                        //globalPhysicsData.yRoundInRadian += 0.00001;
-
-
-
-                        //var Qf = Q_new.ConvertToQuaternionAndNormalize();
-                        //var invQf = Qf.Inverted();
-
-
-                        //var invQ_new = Q_new.Inverted(); 
-                        //var X = invQ_new * new Quaternion
-                        //var diagonalRoundQ = (new Quaternion(new Vector3(0, (float)globalPhysicsData.diagonalRoundInRadian, 0))).Normalized();
-                        //globalPhysicsData.rotationQuaternion = Q_new.ConvertToQuaternionAndNormalize();
                     }
                     //euler
                     else
@@ -343,36 +301,15 @@ namespace Geometric2
                         double W_Y = ((N.Y + (I.Z - I.X) * W.X * W.Z) / I.Y) * deltaTime + W.Y;
                         double W_Z = ((N.Z + (I.X - I.Y) * W.X * W.Y) / I.Z) * deltaTime + W.Z;
 
-
                         Quaterniond Q_new = 0.5 * Q * new Quaterniond(W_X, W_Y, W_Z, 0) * deltaTime + Q;
-                        //Q_new.Normalize();
-
-                        if (W_X > 1e-1)
-                        {
-                            //Debug.WriteLine($"W_X is getting large {W_X}");
-                        }
-
-                        if (W_Z > 1e-1)
-                        {
-                            //Debug.WriteLine($"W_Z is getting large {W_Z}");
-                        }
-
 
                         physicsStepData.angularVelocity = new Vector3d(W_X, W_Y, W_Z);
                         physicsStepData.quaternion = Q_new;
 
-
-                        //UStawienie odpowiednich wartości dla sześcianu
-                        //globalPhysicsData.alfaAngleInRadian += 0.000001;
-                        //globalPhysicsData.diagonalRoundInRadianX += W_X * deltaTime;//W wplywa na srodek ciezkosci wiec nie wiem czy to dobry sposob xd
-                        //globalPhysicsData.diagonalRoundInRadianY += W_Y * deltaTime;
-                        //globalPhysicsData.diagonalRoundInRadianZ += W_Z * deltaTime;
-                        //globalPhysicsData.yRoundInRadian += 0.00001;
-
                         globalPhysicsData.rotationQuaternion = Q_new.ConvertToQuaternion();
                     }
 
-                    //Odczekanie pozostałego czasu
+                    //wait for remaining time to pass
                     long nanoPost;
                     while (isProgramWorking)
                     {

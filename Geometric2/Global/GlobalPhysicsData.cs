@@ -21,7 +21,6 @@ namespace Geometric2.Global
         public InitialConditionsData InitialConditionsData = new InitialConditionsData();
 
         //Visualization Data
-        //public double alfaAngleInRadian = (double)(Math.PI / 180) * 15;
         public double diagonalRoundInRadianX = 0.0;
         public double diagonalRoundInRadianY = 0.0;
         public double diagonalRoundInRadianZ = 0.0;

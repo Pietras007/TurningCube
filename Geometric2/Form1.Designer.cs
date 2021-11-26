@@ -225,7 +225,7 @@ namespace Geometric2
             1,
             0,
             0,
-            131072});
+            196608});
             this.integrationStepNumericUpDown.Location = new System.Drawing.Point(123, 294);
             this.integrationStepNumericUpDown.Maximum = new decimal(new int[] {
             1,
