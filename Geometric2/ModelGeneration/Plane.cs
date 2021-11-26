@@ -66,7 +66,7 @@ namespace Geometric2.ModelGeneration
         {
             if (globalPhysicsData.displayPlane)
             {
-                var model = ModelMatrix.CreateModelMatrix(1, 0, 0, 0, new Vector3(2, 0, 2));
+                var model = ModelMatrix.CreateModelMatrix(1, 0, 0, 0, new Vector3(0, 0, 0));
                 _shaderLight.Use();
                 //_shaderLight.SetMatrix4("model", Matrix4.Identity);
                 _shaderLight.SetMatrix4("model", model);
