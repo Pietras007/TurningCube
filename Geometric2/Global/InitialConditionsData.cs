@@ -15,6 +15,7 @@ namespace Geometric2.Global
         public Vector3d inertiaTensor;
         public double mass;
         public Vector3d massCentre;
+        public Quaterniond massCentreQuaternion;
 
         public void CalculateValues()
         {
@@ -30,6 +31,7 @@ namespace Geometric2.Global
 
             //centre of mass
             massCentre = new Vector3d(0, cubeEdgeLength * Math.Sqrt(3) / 2d, 0);
+            massCentreQuaternion = new Quaterniond(massCentre, 0f);
         }
     }
 }

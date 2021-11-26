@@ -23,7 +23,8 @@ namespace Geometric2.Helpers
         {
             var diagonalRoundQ = Quaternion.FromEulerAngles((float)globalPhysicsData.diagonalRoundInRadianX, (float)globalPhysicsData.diagonalRoundInRadianY, (float)globalPhysicsData.diagonalRoundInRadianZ).Normalized();
             var rotationQuaternion = globalPhysicsData.rotationQuaternion;
-            return rotationQuaternion * diagonalRoundQ;
+            //return rotationQuaternion * diagonalRoundQ;
+            return rotationQuaternion;
         }
     }
 }
